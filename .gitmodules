@@ -1,0 +1,9 @@
+[submodule "ap_pgutils"]
+	path = ap_pgutils
+	url = https://github.com/papodaca/ap_pgutils
+[submodule "wal2json"]
+	path = wal2json
+	url = https://github.com/eulerto/wal2json
+[submodule "plv8"]
+	path = plv8
+	url = https://github.com/plv8/plv8/
