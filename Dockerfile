@@ -1,4 +1,4 @@
-FROM postgres:12 as base
+FROM postgres:13 as base
 
 RUN apt-get update && \
   apt-get install -y \
@@ -23,7 +23,7 @@ RUN cd /src/plv8 && \
   mv Makefile.out Makefile && \
   make v8 && make static -j $(nproc) && make install
 
-FROM postgres:12
+FROM postgres:13
 
 ENV PLV8_VERSION 3.0alpha
 
