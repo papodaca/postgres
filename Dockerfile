@@ -16,12 +16,12 @@ RUN apt-get update && \
     mkdir -p /src
 COPY ./ /src
 
-RUN cd /src/ap_pgutils/ && make && make install
-RUN cd /src/wal2json/ && USE_PGXS=1 make && USE_PGXS=1 make install
+RUN cd /src/ap_pgutils/ && make -j $(nproc) && make install
+RUN cd /src/wal2json/ && USE_PGXS=1 make -j $(nproc) && USE_PGXS=1 make install
 RUN cd /src/plv8 && \
   sed Makefile -e 's/-lc++/ /' > Makefile.out && \
   mv Makefile.out Makefile && \
-  make static && make install
+  make v8 && make static -j $(nproc) && make install
 
 FROM postgres:12
 
@@ -46,4 +46,4 @@ COPY --from=base /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/plv8* /usr/lib/post
 COPY --from=base /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/plv8-${PLV8_VERSION}/* /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/plv8-${PLV8_VERSION}/
 COPY --from=base /usr/share/postgresql/${PG_MAJOR}/extension/plv8* /usr/share/postgresql/${PG_MAJOR}/extension/
 
-COPY ./initconf.sh /docker-entrypoint-initdb.d/
+COPY --from=base /src/initconf.sh /docker-entrypoint-initdb.d/
