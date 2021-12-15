@@ -1,4 +1,5 @@
-FROM postgres:14 as base
+ARG PG_VERSION=14
+FROM postgres:$PG_VERSION as base
 
 RUN apt-get update && \
   apt-get install -y \
@@ -30,11 +31,17 @@ RUN cd /src/plv8 && \
   mv Makefile.out Makefile && \
   make && make install
 
-FROM postgres:14
+FROM postgres:$PG_VERSION
 
 COPY --from=base /src/initconf.sh /docker-entrypoint-initdb.d/
 
 ENV PLV8_VERSION 3.0.0
+
+RUN apt-get update && \
+  apt-get install -y \
+    libc6 \
+    libssl1.1 && \
+  rm -rf /var/lib/apt/lists/*;
 
 RUN mkdir -p \
   /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/ap_pgutils/ \
